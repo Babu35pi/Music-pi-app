@@ -1,51 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<title>Music Pi - Stream with Pi</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Music Pi App</title>
-<style>
-body{font-family:Arial;text-align:center;padding:20px;background:#f0f0f0}
-h1{color:#6a1b9a}
-button{padding:20px;background:gold;font-weight:bold;font-size:18px;border-radius:15px;width:95%;margin-top:20px;border:2px solid black}
-#status{color:green;font-weight:bold;margin-top:15px}
-</style>
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<script> Pi.init({ version: "2.0", sandbox: false }) </script>
+<style>
+  body{margin:0;font-family:Inter,Segoe UI;background:#0a0a0f;color:white}
+  .header{background:linear-gradient(135deg,#6a11cb,#2575fc);padding:40px 20px;text-align:center;border-radius:0 0 30px 30px}
+  .header h1{font-size:32px;margin:0} .header p{opacity:0.9}
+  .player{max-width:480px;margin:-25px auto;background:#15151f;border-radius:24px;padding:25px;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid #2a2a3a}
+  .cover{width:100%;height:220px;background:linear-gradient(135deg,#ff006a,#ffcc00);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:70px}
+  .song{margin:20px 0;text-align:left}
+  .song h2{margin:0;font-size:22px} .song p{color:#aaa;margin:5px 0}
+  .controls{display:flex;justify-content:space-around;align-items:center;margin:25px 0}
+  .controls button{width:60px;height:60px;border-radius:50%;border:none;font-size:24px;cursor:pointer}
+  .play{background:white;color:black;font-size:28px !important;width:75px !important;height:75px !important;box-shadow:0 0 25px rgba(255,255,255,0.4)}
+  .buy{width:100% !important;background:linear-gradient(90deg,#6a11cb,#2575fc);color:white;padding:16px;border-radius:50px;font-weight:bold;font-size:18px;margin-top:15px;box-shadow:0 10px 25px rgba(106,17,203,0.5)}
+  .list{max-width:480px;margin:20px auto;padding:0 20px}
+  .track{background:#15151f;padding:14px;border-radius:14px;display:flex;justify-content:space-between;margin:10px 0;border:1px solid #222}
+  .track b{color:#fff} .track span{color:#8a8a9a;font-size:13px}
+  #status{text-align:center;color:#00ff88;margin:15px;font-weight:bold}
+</style>
 </head>
 <body>
-<h1>🎵 Music Pi App</h1>
-<h2>Live on Vercel!</h2>
-<p>Download & Upload Music, Videos, Movies</p>
-<p>Powered by Pi Network</p>
+<div class="header">
+  <h1>🎵 Music Pi</h1>
+  <p>First Music Streaming Powered by Pi Network<br>Support artists directly with Pi</p>
+</div>
 
-<button onclick="payStep10()">PAY 0.1 Pi TO FINISH STEP 10</button>
-<p id="status"></p>
+<div class="player">
+  <div class="cover">🎧</div>
+  <div class="song">
+    <h2>African Dreams - Uganda Mix</h2>
+    <p>Charity Pi All Stars • 3:45</p>
+  </div>
+  <div class="controls">
+    <button>⏮</button>
+    <button class="play" onclick="togglePlay()" id="playBtn">▶</button>
+    <button>⏭</button>
+  </div>
+  <button class="buy" onclick="buyMusic(1)">💜 Unlock with 1 Pi</button>
+  <button class="buy" onclick="buyMusic(3)" style="background:linear-gradient(90deg,#ff006a,#ffcc00)">⭐ Premium Playlist - 3 Pi</button>
+  <div id="status"></div>
+</div>
+
+<div class="list">
+  <div class="track"><div><b>Hope Uganda</b><br><span>Kampala Beats</span></div><div>2 Pi</div></div>
+  <div class="track"><div><b>Pi Anthem</b><br><span>Pi Pioneers</span></div><div>1 Pi</div></div>
+  <div class="track"><div><b>Charity Love</b><br><span>Babu35pi</span></div><div>1 Pi</div></div>
+</div>
 
 <script>
-const PI_API_KEY = "fzohpaxezm9xzcwaqj0u5psmvlj00mwqpjxrskd";
-Pi.init({version:"2.0", sandbox:false});
+let playing=false;
+function togglePlay(){ playing=!playing; document.getElementById("playBtn").innerText=playing?"⏸":"▶"; }
 
-async function payStep10(){
-  document.getElementById("status").innerText = "Connecting to Pi...";
+async function buyMusic(amount){
+  document.getElementById("status").innerText="Connecting Pi Wallet...";
   try{
-    const scopes = ['payments','username'];
-    const auth = await Pi.authenticate(scopes, function(){});
-    Pi.createPayment({amount: 0.1, memo:"Music pi app mainnet test", metadata:{purpose:"step10"}}, {
-      onReadyForServerApproval: async function(paymentId){
-        document.getElementById("status").innerText = "Approving payment...";
-        await fetch("https://api.minepi.com/v2/payments/"+paymentId+"/approve",{method:"POST", headers:{"Authorization":"Key "+PI_API_KEY}})
-      },
-      onReadyForServerCompletion: async function(paymentId, txid){
-        document.getElementById("status").innerText = "Completing...";
-        await fetch("https://api.minepi.com/v2/payments/"+paymentId+"/complete",{method:"POST", headers:{"Authorization":"Key "+PI_API_KEY, "Content-Type":"application/json"}, body:JSON.stringify({txid})});
-        document.getElementById("status").innerText = "SUCCESS! STEP 10 DONE! Now check Develop portal!";
-        alert("SUCCESS! Go to develop.minepi.com and refresh!");
-      },
-      onCancel: function(){document.getElementById("status").innerText="Cancelled"},
-      onError: function(e){document.getElementById("status").innerText="Error: "+e; alert(e)}
-    })
-  }catch(e){alert(e); document.getElementById("status").innerText=e}
+    await Pi.authenticate(['payments','username'], onIncomplete);
+    Pi.createPayment({
+      amount: amount,
+      memo: "Music Pi - Unlock song " + amount + " Pi",
+      metadata: { type:"music", app:"music-pi" }
+    },{
+      onReadyForServerApproval: (id)=>{ document.getElementById("status").innerText="✅ Payment Created: "+id+" - Approving..."; },
+      onReadyForServerCompletion: (id,txid)=>{ document.getElementById("status").innerText="🎉 Unlocked! Tx: "+txid; },
+      onCancel: ()=>{ document.getElementById("status").innerText="Cancelled"; },
+      onError: (e)=>{ document.getElementById("status").innerText="Error: "+e.message; }
+    });
+  }catch(e){ document.getElementById("status").innerText=e; }
 }
+function onIncomplete(p){ console.log(p); }
 </script>
 </body>
 </html>
