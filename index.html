@@ -2,17 +2,50 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Music Pi App</title>
 <style>
-body{font-family:Arial;text-align:center;padding:40px;background:#111;color:#fff}
-h1{color:#f0c040}
+body{font-family:Arial;text-align:center;padding:20px;background:#f0f0f0}
+h1{color:#6a1b9a}
+button{padding:20px;background:gold;font-weight:bold;font-size:18px;border-radius:15px;width:95%;margin-top:20px;border:2px solid black}
+#status{color:green;font-weight:bold;margin-top:15px}
 </style>
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
 <body>
 <h1>🎵 Music Pi App</h1>
 <h2>Live on Vercel!</h2>
 <p>Download & Upload Music, Videos, Movies</p>
 <p>Powered by Pi Network</p>
+
+<button onclick="payStep10()">PAY 0.1 Pi TO FINISH STEP 10</button>
+<p id="status"></p>
+
+<script>
+const PI_API_KEY = "fzohpaxezm9xzcwaqj0u5psmvlj00mwqpjxrskd";
+Pi.init({version:"2.0", sandbox:false});
+
+async function payStep10(){
+  document.getElementById("status").innerText = "Connecting to Pi...";
+  try{
+    const scopes = ['payments','username'];
+    const auth = await Pi.authenticate(scopes, function(){});
+    Pi.createPayment({amount: 0.1, memo:"Music pi app mainnet test", metadata:{purpose:"step10"}}, {
+      onReadyForServerApproval: async function(paymentId){
+        document.getElementById("status").innerText = "Approving payment...";
+        await fetch("https://api.minepi.com/v2/payments/"+paymentId+"/approve",{method:"POST", headers:{"Authorization":"Key "+PI_API_KEY}})
+      },
+      onReadyForServerCompletion: async function(paymentId, txid){
+        document.getElementById("status").innerText = "Completing...";
+        await fetch("https://api.minepi.com/v2/payments/"+paymentId+"/complete",{method:"POST", headers:{"Authorization":"Key "+PI_API_KEY, "Content-Type":"application/json"}, body:JSON.stringify({txid})});
+        document.getElementById("status").innerText = "SUCCESS! STEP 10 DONE! Now check Develop portal!";
+        alert("SUCCESS! Go to develop.minepi.com and refresh!");
+      },
+      onCancel: function(){document.getElementById("status").innerText="Cancelled"},
+      onError: function(e){document.getElementById("status").innerText="Error: "+e; alert(e)}
+    })
+  }catch(e){alert(e); document.getElementById("status").innerText=e}
+}
+</script>
 </body>
 </html>
