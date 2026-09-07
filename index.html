@@ -65,6 +65,7 @@ body{margin:0;font-family:'Inter',Segoe UI, sans-serif;background:#0a0a0f;color:
   </div>
 
   <button class="pi-btn" id="piAuth" onclick="authPi()">🔐 Connect with Pi Network</button>
+  <button class="pi-btn" style="background:linear-gradient(135deg,#6a11cb,#2575fc);color:white;margin-top:10px" onclick="payWithPi()">💎 Unlock Premium for 1 Pi</button>
   
   <label class="upload">
     📁 Upload Your Music
@@ -146,6 +147,28 @@ function authPi(){
   }catch(e){alert("Open this app in Pi Browser to connect!")}
 }
 function onIncomplete(payment){console.log("incomplete",payment)}
+function payWithPi(){
+  try{
+    Pi.createPayment({
+      amount: 1,
+      memo: "Premium Music Pi Unlock",
+      metadata: { type: "premium" }
+    }, {
+      onReadyForServerApproval: function(paymentId){
+        console.log("Approving",paymentId);
+        alert("Approving payment: "+paymentId);
+      },
+      onReadyForServerCompletion: function(paymentId, txid){
+        alert("✅ PAYMENT SUCCESS! TxID: "+txid+"\nPremium Unlocked!");
+        document.getElementById('cover').innerText = "💎";
+        document.getElementById('title').innerText = "Premium Unlocked!";
+        document.getElementById('artist').innerText = "Thank you Pioneer!";
+      },
+      onCancel: function(paymentId){ alert("Payment Cancelled"); },
+      onError: function(error){ alert("Payment Error: "+error); }
+    });
+  }catch(e){alert("Open in Pi Browser! "+e.message)}
+}
 renderList();
 </script>
 </body>
