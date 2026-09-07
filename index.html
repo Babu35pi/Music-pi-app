@@ -4,74 +4,84 @@
 <title>Music Pi - Stream with Pi</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-<script> Pi.init({ version: "2.0", sandbox: false }) </script>
+<script>
+  Pi.init({ version: "2.0", sandbox: false, onIncompletePayment: onIncomplete });
+</script>
 <style>
-  body{margin:0;font-family:Inter,Segoe UI;background:#0a0a0f;color:white}
-  .header{background:linear-gradient(135deg,#6a11cb,#2575fc);padding:40px 20px;text-align:center;border-radius:0 0 30px 30px}
-  .header h1{font-size:32px;margin:0} .header p{opacity:0.9}
-  .player{max-width:480px;margin:-25px auto;background:#15151f;border-radius:24px;padding:25px;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid #2a2a3a}
-  .cover{width:100%;height:220px;background:linear-gradient(135deg,#ff006a,#ffcc00);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:70px}
-  .song{margin:20px 0;text-align:left}
-  .song h2{margin:0;font-size:22px} .song p{color:#aaa;margin:5px 0}
-  .controls{display:flex;justify-content:space-around;align-items:center;margin:25px 0}
-  .controls button{width:60px;height:60px;border-radius:50%;border:none;font-size:24px;cursor:pointer}
-  .play{background:white;color:black;font-size:28px !important;width:75px !important;height:75px !important;box-shadow:0 0 25px rgba(255,255,255,0.4)}
-  .buy{width:100% !important;background:linear-gradient(90deg,#6a11cb,#2575fc);color:white;padding:16px;border-radius:50px;font-weight:bold;font-size:18px;margin-top:15px;box-shadow:0 10px 25px rgba(106,17,203,0.5)}
-  .list{max-width:480px;margin:20px auto;padding:0 20px}
-  .track{background:#15151f;padding:14px;border-radius:14px;display:flex;justify-content:space-between;margin:10px 0;border:1px solid #222}
-  .track b{color:#fff} .track span{color:#8a8a9a;font-size:13px}
-  #status{text-align:center;color:#00ff88;margin:15px;font-weight:bold}
+body{margin:0;font-family:Inter,Segoe UI,Arial;background:#0a0a0f;color:#fff;text-align:center}
+.header{background:linear-gradient(135deg,#6a11cb,#2575fc);padding:30px 20px}
+.header h1{font-size:32px;margin:0}.header p{opacity:0.9;margin:8px 0 0}
+.player{max-width:480px;margin:-25px auto;background:#15151f;border-radius:20px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+.cover{width:100%;height:220px;background:linear-gradient(135deg,#ff6a00,#ee0979);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:80px}
+.song{margin:20px 0;text-align:left}
+.song h2{margin:0;font-size:22px}.song p{color:#aaa;margin:4px 0}
+.controls{display:flex;justify-content:center;align-items:center;gap:18px;margin:16px 0}
+.controls button{width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;font-size:22px}
+.play{background:white;color:black;font-size:28px!important;width:72px!important;height:72px!important}
+.buy{width:100%!important;background:linear-gradient(90deg,#ff8a00,#e52e71);color:white;padding:14px;border-radius:12px;font-weight:bold;font-size:16px;margin:8px 0;border:none;cursor:pointer}
+.list{max-width:480px;margin:20px auto;padding:0 20px;text-align:left}
+.track{background:#15151f;padding:14px;border-radius:14px;margin:10px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.track b{color:#fff}.track span{color:#8a8a9a;font-size:13px}
+.track.active{border:1px solid #6a11cb}
+#status{text-align:center;color:#00ff88;margin:15px;font-weight:bold;min-height:20px}
+#log{font-size:12px;color:#888;margin-top:10px}
 </style>
 </head>
 <body>
-<div class="header">
-  <h1>🎵 Music Pi</h1>
-  <p>First Music Streaming Powered by Pi Network<br>Support artists directly with Pi</p>
-</div>
-
+<div class="header"><h1>🎵 Music Pi</h1><p>Stream Ugandan Hits with Pi</p></div>
 <div class="player">
-  <div class="cover">🎧</div>
-  <div class="song">
-    <h2>African Dreams - Uganda Mix</h2>
-    <p>Charity Pi All Stars • 3:45</p>
-  </div>
+  <div class="cover" id="cover">🎧</div>
+  <div class="song"><h2 id="title">Hope Uganda</h2><p id="artist">Babu35pi • 3:21</p></div>
+  <audio id="audio" preload="metadata"></audio>
   <div class="controls">
-    <button>⏮</button>
+    <button onclick="prevTrack()">⏮</button>
     <button class="play" onclick="togglePlay()" id="playBtn">▶</button>
-    <button>⏭</button>
+    <button onclick="nextTrack()">⏭</button>
   </div>
-  <button class="buy" onclick="buyMusic(1)">💜 Unlock with 1 Pi</button>
-  <button class="buy" onclick="buyMusic(3)" style="background:linear-gradient(90deg,#ff006a,#ffcc00)">⭐ Premium Playlist - 3 Pi</button>
-  <div id="status"></div>
+  <button class="buy" onclick="buyMusic(1)">💜 Unlock this song - 1 Pi</button>
+  <button class="buy" onclick="buyMusic(3)" style="background:linear-gradient(90deg,#6a11cb,#2575fc)">⭐ Unlock ALL 3 Songs - 3 Pi</button>
+  <div id="status">Ready - Login with Pi to buy</div><div id="log"></div>
 </div>
-
 <div class="list">
-  <div class="track"><div><b>Hope Uganda</b><br><span>Kampala Beats</span></div><div>2 Pi</div></div>
-  <div class="track"><div><b>Pi Anthem</b><br><span>Pi Pioneers</span></div><div>1 Pi</div></div>
-  <div class="track"><div><b>Charity Love</b><br><span>Babu35pi</span></div><div>1 Pi</div></div>
+  <div class="track active" onclick="playTrack(0)"><div><b>Hope Uganda</b><br><span>Original • Free preview 30s</span></div><span>▶</span></div>
+  <div class="track" onclick="playTrack(1)"><div><b>Pi Anthem</b><br><span>Pi Community • 2:45</span></div><span>▶</span></div>
+  <div class="track" onclick="playTrack(2)"><div><b>Charity Love</b><br><span>Babu Collection • 3:10</span></div><span>▶</span></div>
 </div>
-
 <script>
-let playing=false;
-function togglePlay(){ playing=!playing; document.getElementById("playBtn").innerText=playing?"⏸":"▶"; }
-
+const tracks = [
+  {title:"Hope Uganda", artist:"Babu35pi • 3:21", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover:"🇺🇬"},
+  {title:"Pi Anthem", artist:"Pi Community • 2:45", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover:"🔥"},
+  {title:"Charity Love", artist:"Babu Collection • 3:10", src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover:"❤️"}
+];
+let current=0,playing=false;
+const audio=document.getElementById("audio");
+function loadTrack(i){current=i;const t=tracks[i];document.getElementById("title").innerText=t.title;document.getElementById("artist").innerText=t.artist;document.getElementById("cover").innerText=t.cover;audio.src=t.src;document.querySelectorAll(".track").forEach((el,idx)=>el.classList.toggle("active",idx===i));}
+function togglePlay(){if(!audio.src)loadTrack(current);if(playing)audio.pause();else audio.play();}
+audio.onplay=()=>{playing=true;document.getElementById("playBtn").innerText="⏸";document.getElementById("status").innerText="Playing...";}
+audio.onpause=()=>{playing=false;document.getElementById("playBtn").innerText="▶";document.getElementById("status").innerText="Paused";}
+function playTrack(i){loadTrack(i);audio.play();}function nextTrack(){loadTrack((current+1)%tracks.length);audio.play();}function prevTrack(){loadTrack((current-1+tracks.length)%tracks.length);audio.play();}
+loadTrack(0);
 async function buyMusic(amount){
-  document.getElementById("status").innerText="Connecting Pi Wallet...";
+  document.getElementById("status").innerText="Connecting to Pi Wallet...";
   try{
-    await Pi.authenticate(['payments','username'], onIncomplete);
-    Pi.createPayment({
-      amount: amount,
-      memo: "Music Pi - Unlock song " + amount + " Pi",
-      metadata: { type:"music", app:"music-pi" }
-    },{
-      onReadyForServerApproval: (id)=>{ document.getElementById("status").innerText="✅ Payment Created: "+id+" - Approving..."; },
-      onReadyForServerCompletion: (id,txid)=>{ document.getElementById("status").innerText="🎉 Unlocked! Tx: "+txid; },
-      onCancel: ()=>{ document.getElementById("status").innerText="Cancelled"; },
-      onError: (e)=>{ document.getElementById("status").innerText="Error: "+e.message; }
+    const auth=await Pi.authenticate(['payments','username'],onIncomplete);
+    const username=auth.user?auth.user.username:"Pioneer";
+    document.getElementById("status").innerText="Hello "+username+" - Creating payment "+amount+" Pi...";
+    Pi.createPayment({amount:amount,memo:"Music Pi - Unlock song "+amount+" Pi",metadata:{type:"music",app:"music-pi",song:tracks[current].title}},{
+      onReadyForServerApproval: async (paymentId)=>{
+        document.getElementById("status").innerText="Approving "+paymentId.slice(0,8)+"...";
+        try{await fetch('/api/approve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paymentId})});}catch(e){console.log("Demo mode - no backend");}
+      },
+      onReadyForServerCompletion: async (paymentId,txid)=>{
+        document.getElementById("status").innerText="✅ Payment complete! Tx: "+txid.slice(0,10)+"... Unlocked!";
+        try{await fetch('/api/complete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({paymentId,txid})});}catch(e){}
+      },
+      onCancel:()=>{document.getElementById("status").innerText="Payment cancelled";},
+      onError:(error)=>{document.getElementById("status").innerText="Error: "+(error.message||JSON.stringify(error));}
     });
-  }catch(e){ document.getElementById("status").innerText=e; }
+  }catch(e){document.getElementById("status").innerText="Auth failed: "+e.message;}
 }
-function onIncomplete(p){ console.log(p); }
+function onIncomplete(payment){console.log(payment);document.getElementById("status").innerText="Found incomplete "+payment.identifier.slice(0,8);try{Pi.completePayment(payment.identifier);}catch(e){}}
 </script>
 </body>
 </html>
