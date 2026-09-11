@@ -1,62 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Music Pi - Premium Music Player</title>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Music Pi - Premium</title>
 <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 <script>
-  Pi.init({ version: "2.0", sandbox: true })
+  Pi.init({ version: "2.0", sandbox: false });
 </script>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:'Inter',Segoe UI, sans-serif;background:#0a0a0f;color:white;min-height:100vh}
-.header{background:linear-gradient(135deg,#6a11cb 0%,#2575fc 100%);padding:50px 20px 70px;text-align:center;border-radius:0 0 35px 35px;position:relative}
-.header h1{font-size:34px;margin:0;letter-spacing:2.5px;padding-top:8px;margin-bottom:12px;font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,0.3)}
-.header p{opacity:0.9;margin:0;font-size:15px;letter-spacing:0.5px}
-.player{max-width:480px;margin:-35px auto 20px;background:#15151f;border-radius:28px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.6);border:1px solid #2a2a3a;position:relative;z-index:2}
-.cover{width:100%;height:240px;background:linear-gradient(135deg,#ff006a,#ffcc00,#6a11cb);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:70px;animation:gradient 8s ease infinite;background-size:300% 300%;box-shadow:0 10px 30px rgba(106,17,203,0.3)}
-@keyframes gradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-.song{margin:22px 0 5px;text-align:left}
-.song h2{margin:0;font-size:22px;letter-spacing:0.5px}
-.song p{color:#8b8ba0;margin:5px 0 0;font-size:14px}
-.controls{display:flex;justify-content:center;align-items:center;gap:25px;margin:20px 0}
-.btn{width:52px;height:52px;border-radius:50%;border:none;background:#1f1f2e;color:white;font-size:20px;cursor:pointer;transition:0.2s}
-.btn:active{transform:scale(0.92)}
-.btn-play{width:68px;height:68px;background:linear-gradient(135deg,#6a11cb,#2575fc);font-size:28px;box-shadow:0 8px 20px rgba(106,17,203,0.4)}
-.progress{width:100%;height:6px;background:#1f1f2e;border-radius:10px;margin:20px 0 10px;overflow:hidden;cursor:pointer}
-.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#6a11cb,#2575fc);transition:width 0.1s}
-.time{display:flex;justify-content:space-between;font-size:12px;color:#8b8ba0}
-.playlist{margin-top:25px;text-align:left}
-.playlist h3{font-size:16px;margin-bottom:12px;color:#fff}
-.track{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;cursor:pointer;transition:0.2s;border:1px solid transparent}
-.track:hover{background:#1f1f2e}
-.track.active{background:#1f1f2e;border-color:#6a11cb}
-.track-icon{width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,#6a11cb,#2575fc);display:flex;align-items:center;justify-content:center}
-.pi-btn{width:100%;margin-top:20px;background:#ffcc00;color:#000;border:none;padding:14px;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;letter-spacing:0.5px}
-.upload{margin-top:15px;width:100%;padding:12px;background:transparent;border:1px dashed #3a3a4a;border-radius:12px;color:#8b8ba0;cursor:pointer;text-align:center;font-size:13px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:linear-gradient(135deg,#1a0033,#6a11cb,#2575fc);min-height:100vh;color:white;font-family:system-ui;padding:20px;display:flex;justify-content:center;align-items:center}
+ .app{width:100%;max-width:380px;background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border-radius:30px;padding:25px;box-shadow:0 20px 60px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.2)}
+ .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+ .logo{font-weight:900;font-size:22px}
+ .pi-badge{background:#ffcc00;color:#000;padding:6px 12px;border-radius:20px;font-weight:700;font-size:12px}
+ .cover{width:100%;aspect-ratio:1;background:linear-gradient(45deg,#ff00cc,#3333ff);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:80px;margin-bottom:20px;box-shadow:0 15px 35px rgba(0,0,0,0.3)}
+ .info{text-align:center;margin-bottom:20px}
+ .title{font-size:20px;font-weight:800;margin-bottom:5px}
+ .artist{opacity:0.7;font-size:14px}
+ .progress{width:100%;height:6px;background:rgba(255,255,255,0.2);border-radius:10px;margin:20px 0;overflow:hidden}
+ .bar{width:35%;height:100%;background:#fff;border-radius:10px}
+ .controls{display:flex;justify-content:space-around;align-items:center;margin:25px 0}
+ .btn{width:50px;height:50px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:white;font-size:20px;cursor:pointer}
+ .btn-play{width:70px;height:70px;background:white;color:#6a11cb;font-size:30px;box-shadow:0 10px 25px rgba(0,0,0,0.3)}
+ .playlist{margin-top:10px}
+ .track{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;background:rgba(255,255,255,0.08);border-radius:15px;margin-bottom:10px;cursor:pointer}
+ .track.active{background:rgba(255,255,255,0.2);border:1px solid white}
+  #piPayBtn{width:100%;background:linear-gradient(90deg,#ffcc00,#ff9900);color:#000;padding:16px;border-radius:15px;border:none;font-weight:900;font-size:15px;cursor:pointer;margin-top:20px;box-shadow:0 8px 20px rgba(255,204,0,0.4)}
+  #loginBtn{width:100%;background:white;color:#6a11cb;padding:14px;border-radius:15px;border:none;font-weight:800;margin-bottom:15px;cursor:pointer}
+ .status{text-align:center;font-size:12px;opacity:0.8;margin-top:10px}
 </style>
 </head>
 <body>
-<div class="header">
-  <h1>🎵 Music Pi</h1>
-  <p>Premium Pi-Powered Music Experience</p>
-</div>
-
-<div class="player">
-  <div class="cover" id="cover">🎶</div>
-  
-  <div class="song">
-    <h2 id="title">Select a track</h2>
-    <p id="artist">Pi Music Collection</p>
+<div class="app">
+  <div class="header">
+    <div class="logo">🎵 Music Pi</div>
+    <div class="pi-badge">Pi TESTNET</div>
   </div>
 
-  <div class="progress" id="progress" onclick="seek(event)">
-    <div class="progress-bar" id="bar"></div>
+  <div class="cover" id="cover">🎧</div>
+
+  <div class="info">
+    <div class="title" id="songTitle">Summer Vibes</div>
+    <div class="artist" id="songArtist">Babu Beats</div>
   </div>
-  <div class="time">
-    <span id="current">0:00</span>
-    <span id="duration">0:00</span>
-  </div>
+
+  <div class="progress"><div class="bar" id="bar"></div></div>
 
   <div class="controls">
     <button class="btn" onclick="prev()">⏮</button>
@@ -64,112 +54,82 @@ body{margin:0;font-family:'Inter',Segoe UI, sans-serif;background:#0a0a0f;color:
     <button class="btn" onclick="next()">⏭</button>
   </div>
 
-  <button class="pi-btn" id="piAuth" onclick="authPi()">🔐 Connect with Pi Network</button>
-  <button class="pi-btn" style="background:linear-gradient(135deg,#6a11cb,#2575fc);color:white;margin-top:10px" onclick="payWithPi()">💎 Unlock Premium for 1 Pi</button>
-  
-  <label class="upload">
-    📁 Upload Your Music
-    <input type="file" id="fileInput" accept="audio/*" multiple hidden onchange="uploadFiles(this.files)">
-  </label>
+  <button id="loginBtn" onclick="loginWithPi()">👤 Login with Pi</button>
+  <button id="piPayBtn" onclick="payWithPi()">🔓 Unlock Premium (1 Pi)</button>
+  <div class="status" id="status">Not logged in • Free version</div>
 
   <div class="playlist">
-    <h3>Playlist</h3>
-    <div id="list"></div>
+    <div class="track active" onclick="playTrack(0)"><span>1. Summer Vibes</span><span>3:24</span></div>
+    <div class="track" onclick="playTrack(1)"><span>2. Night City</span><span>2:58</span></div>
+    <div class="track" onclick="playTrack(2)"><span>3. Pi Dreams</span><span>4:12</span></div>
   </div>
-
-  <audio id="audio" ontimeupdate="updateProgress()" onended="next()"></audio>
 </div>
 
 <script>
-const tracks = [
-  {title:"Summer Vibes",artist:"Pi Beats",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",emoji:"☀️"},
-  {title:"Night Drive",artist:"Neon Pulse",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",emoji:"🌙"},
-  {title:"Ocean Wave",artist:"Calm Mind",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",emoji:"🌊"}
-];
-let current = 0;
+let piUser = null;
+let isPremium = false;
 let isPlaying = false;
-const audio = document.getElementById('audio');
-const listEl = document.getElementById('list');
+const songs = [
+  {title:"Summer Vibes", artist:"Babu Beats", emoji:"☀️"},
+  {title:"Night City", artist:"Babu Beats", emoji:"🌃"},
+  {title:"Pi Dreams", artist:"Babu Beats", emoji:"🚀"}
+];
+let cur = 0;
 
-function renderList(){
-  listEl.innerHTML = tracks.map((t,i)=>`
-    <div class="track ${i===current?'active':''}" onclick="playTrack(${i})">
-      <div class="track-icon">${t.emoji}</div>
-      <div><div style="font-size:14px;font-weight:600">${t.title}</div><div style="font-size:12px;color:#8b8ba0">${t.artist}</div></div>
-    </div>
-  `).join('');
+function updateUI(){
+  document.getElementById('songTitle').innerText = songs[cur].title;
+  document.getElementById('songArtist').innerText = songs[cur].artist;
+  document.getElementById('cover').innerText = songs[cur].emoji;
+  document.querySelectorAll('.track').forEach((t,i)=>t.classList.toggle('active', i===cur));
 }
-function playTrack(i){
-  current = i;
-  const t = tracks[current];
-  audio.src = t.src;
-  document.getElementById('title').innerText = t.title;
-  document.getElementById('artist').innerText = t.artist;
-  document.getElementById('cover').innerText = t.emoji;
-  audio.play();
-  isPlaying = true;
-  document.getElementById('playBtn').innerText = "⏸";
-  renderList();
-}
-function togglePlay(){
-  if(!audio.src) return playTrack(0);
-  if(isPlaying){audio.pause();document.getElementById('playBtn').innerText="▶";}else{audio.play();document.getElementById('playBtn').innerText="⏸";}
-  isPlaying=!isPlaying;
-}
-function next(){playTrack((current+1)%tracks.length)}
-function prev(){playTrack((current-1+tracks.length)%tracks.length)}
-function updateProgress(){
-  const pct = (audio.currentTime/audio.duration)*100 || 0;
-  document.getElementById('bar').style.width = pct+"%";
-  document.getElementById('current').innerText = format(audio.currentTime);
-  document.getElementById('duration').innerText = format(audio.duration);
-}
-function format(s){if(isNaN(s))return "0:00";const m=Math.floor(s/60);const sec=Math.floor(s%60).toString().padStart(2,'0');return `${m}:${sec}`;}
-function seek(e){
-  const rect = e.currentTarget.getBoundingClientRect();
-  const pct = (e.clientX-rect.left)/rect.width;
-  audio.currentTime = pct*audio.duration;
-}
-function uploadFiles(files){
-  for(let f of files){
-    const url = URL.createObjectURL(f);
-    tracks.push({title:f.name.replace('.mp3',''),artist:"My Upload",src:url,emoji:"🎵"});
-  }
-  renderList();
-  alert(files.length+" songs added!");
-}
-function authPi(){
+function playTrack(i){ cur=i; updateUI(); isPlaying=true; document.getElementById('playBtn').innerText="⏸"; }
+function togglePlay(){ isPlaying=!isPlaying; document.getElementById('playBtn').innerText=isPlaying?"⏸":"▶"; }
+function next(){ cur=(cur+1)%songs.length; updateUI(); }
+function prev(){ cur=(cur-1+songs.length)%songs.length; updateUI(); }
+
+// --- Pi PAYMENTS ---
+async function loginWithPi(){
   try{
+    document.getElementById('status').innerText="Connecting to Pi...";
     const scopes = ['username','payments'];
-    Pi.authenticate(scopes, onIncomplete).then(auth=>{
-      document.getElementById('piAuth').innerText = "✅ Connected: "+auth.user.username;
-    }).catch(e=>alert("Pi Auth: "+e.message));
-  }catch(e){alert("Open this app in Pi Browser to connect!")}
+    const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+    piUser = auth.user;
+    document.getElementById('loginBtn').innerText="✅ @"+piUser.username;
+    document.getElementById('status').innerText="Logged in as @"+piUser.username+" • "+(isPremium?"Premium ✅":"Free");
+  }catch(e){ alert("Pi Login failed: "+e.message); document.getElementById('status').innerText="Login failed - Open in Pi Browser"; }
 }
-function onIncomplete(payment){console.log("incomplete",payment)}
-function payWithPi(){
+
+function onIncompletePaymentFound(payment){
+  console.log("Found incomplete payment:", payment);
+}
+
+async function payWithPi(){
+  if(!piUser){ await loginWithPi(); if(!piUser) return; }
   try{
-    Pi.createPayment({
+    document.getElementById('status').innerText="Creating payment...";
+    const payment = await Pi.createPayment({
       amount: 1,
-      memo: "Premium Music Pi Unlock",
-      metadata: { type: "premium" }
-    }, {
+      memo: "Music Pi Premium - Unlock all songs",
+      metadata: { type:"premium", app:"music-pi-app" }
+    },{
       onReadyForServerApproval: function(paymentId){
-        console.log("Approving",paymentId);
-        alert("Approving payment: "+paymentId);
+        console.log("Ready for approval:", paymentId);
+        document.getElementById('status').innerText="Approving payment...";
+        // For Testnet without backend, we just log. In production you call your server.
       },
       onReadyForServerCompletion: function(paymentId, txid){
-        alert("✅ PAYMENT SUCCESS! TxID: "+txid+"\nPremium Unlocked!");
-        document.getElementById('cover').innerText = "💎";
-        document.getElementById('title').innerText = "Premium Unlocked!";
-        document.getElementById('artist').innerText = "Thank you Pioneer!";
+        console.log("Payment completed:", paymentId, txid);
+        isPremium = true;
+        document.getElementById('piPayBtn').innerText="✅ Premium Unlocked!";
+        document.getElementById('piPayBtn').style.background="linear-gradient(90deg,#00ff88,#00cc66)";
+        document.getElementById('status').innerText="Premium unlocked! Tx: "+txid.substring(0,10)+"...";
+        alert("🎉 Payment Success! Premium unlocked for @"+piUser.username);
       },
-      onCancel: function(paymentId){ alert("Payment Cancelled"); },
-      onError: function(error){ alert("Payment Error: "+error); }
+      onCancel: function(paymentId){ document.getElementById('status').innerText="Payment cancelled"; },
+      onError: function(error, payment){ alert("Payment error: "+error.message); document.getElementById('status').innerText="Payment error"; }
     });
-  }catch(e){alert("Open in Pi Browser! "+e.message)}
+  }catch(e){ alert("Error: "+e.message); }
 }
-renderList();
 </script>
 </body>
 </html>
